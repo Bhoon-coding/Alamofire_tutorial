@@ -7,9 +7,54 @@
 
 import Foundation
 
-struct Todo: Codable {
-    var userId: Int?
-    var id: Int?
-    var title: String?
-    var completed: Bool?
+//struct Todos: Codable {
+//    let todo: [Todo]?
+//}
+
+//struct Todo: Codable {
+//    let userId: Int
+//    let id: Int
+//    let title: String
+//    let completed: Bool
+//}
+
+struct Records: Codable {
+//    let count: Int
+//    let next: String?
+//    let previous: String?
+    let records: [Record]
+    
+    private enum CodingKeys: String, CodingKey {
+        case records = "results"
+    }
+}
+
+struct Record: Codable {
+    let id: Int?
+    let name: String?
+    let survey: Survey?
+    let title: String?
+    let type: String?
+    let unit: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case survey
+        case title
+        case type
+        case unit
+    }
+}
+
+struct Survey: Codable {
+    let thtb: Bool
+    let normalRangeStart: Int
+    let normalRangeEnd: Int
+
+    private enum CodingKeys: String, CodingKey {
+        case thtb
+        case normalRangeStart = "normal_range_start"
+        case normalRangeEnd = "normal_range_end"
+    }
 }

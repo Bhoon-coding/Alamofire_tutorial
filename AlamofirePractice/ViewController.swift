@@ -9,7 +9,7 @@ import UIKit
 import Alamofire
 import SnapKit
 
-class ApiViewController: UIViewController {
+class ViewController: UIViewController {
     
     lazy var viewWrapper: UIView = {
        let view = UIView()
@@ -77,10 +77,14 @@ class ApiViewController: UIViewController {
 
     }
     
+//    var dataSource: [Record] = []
+    
     func getTest() {
         
         let url = "https://staging.onionsapp.com/record/record/"
+        // todo 테스트
 //         let url = "https://jsonplaceholder.typicode.com/todos/1"
+        // ocr 테스트서버
 //        let url = "http://dev2.arasoft.kr:18080/okra-app-v1/ocrTest"
         
 //        let header: HTTPHeaders = ["key": "93f6a8b64495daef8e68dcd3177a8f867c66315a"]
@@ -90,14 +94,22 @@ class ApiViewController: UIViewController {
 //                   parameters: param
 //                   headers: header
         )
-                  .responseJSON { response in
-                      print("check res: \(response)")
-                      switch response.result {
-                      case .success:
-                          if let data = try! response.result.get() as? [String: Any] {
-                              print("POST 성공: \(data)")
-                          }
-                      case .failure(let err):
+            .responseJSON { response in
+                switch response.result {
+                case .success:
+                    
+                    guard let res = response.data else { return }
+                    
+                    do {
+                        
+                        let json = try JSONDecoder().decode(Records.self, from: res)
+                        
+                                print("json:",json)
+
+                    } catch(let err) {
+                        print(err.localizedDescription)
+                    }
+                case .failure(let err):
                           print("Error: \(err.localizedDescription)")
                           return
                       }
