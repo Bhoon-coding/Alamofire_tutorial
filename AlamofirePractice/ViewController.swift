@@ -77,9 +77,9 @@ class ViewController: UIViewController {
 
     }
     
-//    var dataSource: [Record] = []
+    var dataSource: [Record] = []
     
-    func getTest() {
+    func fetchData() {
         
         let url = "https://staging.onionsapp.com/record/record/"
         // todo 테스트
@@ -98,17 +98,20 @@ class ViewController: UIViewController {
                 switch response.result {
                 case .success:
                     
+                    print("response:", response)
                     guard let res = response.data else { return }
                     
                     do {
-                        
+
                         let json = try JSONDecoder().decode(Records.self, from: res)
                         
-                                print("json:",json)
-
+                        print(json.results)
+                        
+                        
                     } catch(let err) {
                         print(err.localizedDescription)
                     }
+                    
                 case .failure(let err):
                           print("Error: \(err.localizedDescription)")
                           return
@@ -155,6 +158,6 @@ class ViewController: UIViewController {
     }
     
     @objc func tappedGetButton() {
-        getTest()
+        fetchData()
     }
 }

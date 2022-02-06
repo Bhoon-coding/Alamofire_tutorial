@@ -19,14 +19,11 @@ import Foundation
 //}
 
 struct Records: Codable {
-//    let count: Int
-//    let next: String?
-//    let previous: String?
-    let records: [Record]
+    let count: Int?
+    let next: String?
+    let previous: String?
+    let results: [Record]
     
-    private enum CodingKeys: String, CodingKey {
-        case records = "results"
-    }
 }
 
 struct Record: Codable {
