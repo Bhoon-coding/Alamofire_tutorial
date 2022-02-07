@@ -19,6 +19,16 @@ class ViewController: UIViewController {
         return view
     }()
     
+    lazy var postButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("POST(로그인)", for: .normal)
+        button.setTitleColor(.white , for: .normal)
+        button.layer.cornerRadius = 10
+        button.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        button.addTarget(self, action: #selector(tappedPostButton), for: .touchUpInside)
+        return button
+    }()
+    
     lazy var getButton: UIButton = {
         let button = UIButton()
         button.setTitle("GET", for: .normal)
@@ -29,13 +39,13 @@ class ViewController: UIViewController {
         return button
     }()
     
-    lazy var postButton: UIButton = {
+    lazy var testButton: UIButton = {
         let button = UIButton()
-        button.setTitle("POST(로그인)", for: .normal)
+        button.setTitle("dataTest", for: .normal)
         button.setTitleColor(.white , for: .normal)
         button.layer.cornerRadius = 10
-        button.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        button.addTarget(self, action: #selector(tappedPostButton), for: .touchUpInside)
+        button.backgroundColor = #colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1)
+        button.addTarget(self, action: #selector(tappedTestButton), for: .touchUpInside)
         return button
     }()
     
@@ -55,6 +65,7 @@ class ViewController: UIViewController {
         self.view.addSubview(viewWrapper)
         self.view.addSubview(postButton)
         self.view.addSubview(getButton)
+        self.view.addSubview(testButton)
         
         // MARK: setupLayout
         viewWrapper.snp.makeConstraints {
@@ -74,26 +85,30 @@ class ViewController: UIViewController {
             $0.centerX.equalTo(self.viewWrapper)
         }
         
+        testButton.snp.makeConstraints {
+            $0.top.equalTo(self.getButton).offset(80)
+            $0.width.equalTo(80)
+            $0.centerX.equalTo(self.viewWrapper)
+        }
+        
 
     }
     
-    var dataSource: [Record] = []
-    
-    func fetchData() {
-        
-        let url = "https://staging.onionsapp.com/record/record/"
-        // todo 테스트
-//         let url = "https://jsonplaceholder.typicode.com/todos/1"
-        // ocr 테스트서버
-//        let url = "http://dev2.arasoft.kr:18080/okra-app-v1/ocrTest"
-        
-//        let header: HTTPHeaders = ["key": "93f6a8b64495daef8e68dcd3177a8f867c66315a"]
-              
-        AF.request(url,
-                   method: .get
-//                   parameters: param
-//                   headers: header
-        )
+    func fetchData(completion: @escaping (Result<[Record], Error>) -> Void) {
+            
+            let url = "https://staging.onionsapp.com/record/record/"
+            // todo 테스트
+    //         let url = "https://jsonplaceholder.typicode.com/todos/1"
+            // ocr 테스트서버
+    //        let url = "http://dev2.arasoft.kr:18080/okra-app-v1/ocrTest"
+            
+    //        let header: HTTPHeaders = ["key": "93f6a8b64495daef8e68dcd3177a8f867c66315a"]
+                  
+            AF.request(url,
+                       method: .get
+    //                   parameters: param
+    //                   headers: header
+            )
             .responseJSON { response in
                 switch response.result {
                 case .success:
@@ -102,10 +117,11 @@ class ViewController: UIViewController {
                     guard let res = response.data else { return }
                     
                     do {
-
-                        let json = try JSONDecoder().decode(Records.self, from: res)
+                        let decoder = JSONDecoder()
+                        let json = try decoder.decode(Records.self, from: res)
                         
-                        print(json.results)
+                        debugPrint("데이터 디버그프린트:",json.results)
+                        completion(.success(json.results))
                         
                         
                     } catch(let err) {
@@ -113,14 +129,23 @@ class ViewController: UIViewController {
                     }
                     
                 case .failure(let err):
-                          print("Error: \(err.localizedDescription)")
-                          return
-                      }
-                  }
-      
+                    print("Error: \(err.localizedDescription)")
+                    completion(.failure(err))
+                    return
+                }
+            }
+          
+        }
+
+    
+    
+    func printData() {
+        
+//        Service.shared.fetchData { data in
+//            print("completion 데이터 가져오나!? : \(data)")
+//        }
+        
     }
-    
-    
     
     func postTest() {
         
@@ -158,6 +183,12 @@ class ViewController: UIViewController {
     }
     
     @objc func tappedGetButton() {
-        fetchData()
+        fetchData { data in
+            debugPrint("data: \(data)")
+        }
+    }
+    
+    @objc func tappedTestButton() {
+        printData()
     }
 }

@@ -27,7 +27,8 @@ struct Records: Codable {
 }
 
 struct Record: Codable {
-    let id: Int?
+    
+    let id: Int
     let name: String?
     let survey: Survey?
     let title: String?
@@ -42,6 +43,8 @@ struct Record: Codable {
         case type
         case unit
     }
+    
+
 }
 
 struct Survey: Codable {
