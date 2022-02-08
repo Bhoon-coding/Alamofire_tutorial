@@ -36,12 +36,7 @@ struct Record: Codable {
     let unit: String?
 
     private enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case survey
-        case title
-        case type
-        case unit
+        case id, name, survey, title, type, unit
     }
     
 
@@ -52,9 +47,4 @@ struct Survey: Codable {
     let normalRangeStart: Int
     let normalRangeEnd: Int
 
-    private enum CodingKeys: String, CodingKey {
-        case thtb
-        case normalRangeStart = "normal_range_start"
-        case normalRangeEnd = "normal_range_end"
-    }
 }
