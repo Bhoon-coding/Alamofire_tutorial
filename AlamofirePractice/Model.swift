@@ -28,7 +28,7 @@ struct Records: Codable {
 
 struct Record: Codable {
     
-    let id: Int
+    let id: Int?
     let name: String?
     let survey: Survey?
     let title: String?

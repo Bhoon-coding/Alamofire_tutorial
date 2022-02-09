@@ -125,15 +125,42 @@ class ViewController: UIViewController {
                 switch response.result {
                 case .success:
 
-                    print("response:", response)
                     guard let res = response.data else { return }
 
                     do {
                         let decoder = JSONDecoder()
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
                         let json = try decoder.decode(Records.self, from: res)
+                        
+//                        guard let finalData = json.results else { return }
+//
+                        let recordData = json.results.map { data in
+                            guard let id = data.id,
+                                  let name = data.name,
+                                  let survey = data.survey,
+                                  let title = data.title,
+                                  let unit = data.unit,
+                                  let type = data.type else { return }
+                            
+                            var recordInfo: Record = Record(id: id, name: name, survey: survey, title: title, type: type, unit: unit)
+                            
+                            dump(recordInfo)
+                            print("recordInfo:", recordInfo)
+                            
+                            print("id:",id, "name:",name, "survey:",survey, "title:",title, "unit:",unit, "type:",type)
+                            
+                        }
+                        
+                        
+//                        let surveyData = recordData.map { data in
+//
+//                            print("survey:", data)
+//                        }
+                        
+                        print("recordData:", recordData)
+//                        print("surveyData:", surveyData)
+                        
 
-                        debugPrint("데이터 디버그프린트:",json.results)
                         completion(.success(json.results))
 
 
@@ -163,30 +190,28 @@ class ViewController: UIViewController {
     func postTest() {
         // ocr 테스트서버
         let url = "http://dev2.arasoft.kr:18080/okra-app-v1/ocrTest"
-//        let url = "https://staging.onionsapp.com/rest-auth/login/"
 
         let params = ["username": "테스트",
                       "email": "1@23.com",
-                      "password": "123123"
-                     ]
+                      "password": "123123"]
 
-//        let headers: HTTPHeaders = ["Authorization": "Token:93f6a8b64495daef8e68dcd3177a8f867c66315a"]
+    //        let headers: HTTPHeaders = ["Authorization": "Token:93f6a8b64495daef8e68dcd3177a8f867c66315a"]
 
         AF.request(url,
                    method: .post,
                    parameters: params,
                    encoding: JSONEncoding.default
-//                   headers: headers
+    //                   headers: headers
         )
-//            .validate(statusCode: 200..<300)
+    //            .validate(statusCode: 200..<300)
             .responseJSON { res in
                 switch res.result {
                 case .success(let data):
                     print("data: \(data)")
                     self.dataTextView.text = "\(data)"
-//                    if let data = data as? [String: Any] {
-//                        print("Get 성공:  \(data)")
-//                    }
+    //                    if let data = data as? [String: Any] {
+    //                        print("Get 성공:  \(data)")
+    //                    }
                 case .failure(let err):
                     print("get Error: \(err.localizedDescription)")
                 }
@@ -201,7 +226,7 @@ class ViewController: UIViewController {
 
     @objc func tappedGetButton() {
         fetchData { data in
-            debugPrint("data: \(data)")
+            print("data: \(data)")
         }
     }
 
