@@ -58,10 +58,10 @@ class ViewController: UIViewController {
 //        Networkings.shared.fetchTodoData { (result) in
 //            print("Result ===>", result)
 //        }
-        setupUI()
+        setUpUI()
     }
 
-    private func setupUI() {
+    private func setUpUI() {
 
         // MARK: addSubview
         view.addSubview(scrollView)
@@ -131,44 +131,16 @@ class ViewController: UIViewController {
                         let decoder = JSONDecoder()
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
                         let json = try decoder.decode(Records.self, from: res)
+                        let records: [Record] = json.results
                         
-//                        guard let finalData = json.results else { return }
-//
-                        let recordData = json.results.map { data in
-                            guard let id = data.id,
-                                  let name = data.name,
-                                  let survey = data.survey,
-                                  let title = data.title,
-                                  let unit = data.unit,
-                                  let type = data.type else { return }
-                            
-                            var recordInfo: Record = Record(id: id, name: name, survey: survey, title: title, type: type, unit: unit)
-                            
-                            dump(recordInfo)
-                            print("recordInfo:", recordInfo)
-                            
-                            print("id:",id, "name:",name, "survey:",survey, "title:",title, "unit:",unit, "type:",type)
-                            
-                        }
-                        
-                        
-//                        let surveyData = recordData.map { data in
-//
-//                            print("survey:", data)
-//                        }
-                        
-                        print("recordData:", recordData)
-//                        print("surveyData:", surveyData)
-                        
-
-                        completion(.success(json.results))
-
+                        completion(.success(records))
 
                     } catch(let err) {
                         print(err.localizedDescription)
                     }
 
                 case .failure(let err):
+
                     print("Error: \(err.localizedDescription)")
                     completion(.failure(err))
                     return
@@ -189,8 +161,9 @@ class ViewController: UIViewController {
 
     func postTest() {
         // ocr 테스트서버
+        
         let url = "http://dev2.arasoft.kr:18080/okra-app-v1/ocrTest"
-
+        
         let params = ["username": "테스트",
                       "email": "1@23.com",
                       "password": "123123"]
@@ -206,12 +179,26 @@ class ViewController: UIViewController {
     //            .validate(statusCode: 200..<300)
             .responseJSON { res in
                 switch res.result {
-                case .success(let data):
-                    print("data: \(data)")
-                    self.dataTextView.text = "\(data)"
-    //                    if let data = data as? [String: Any] {
-    //                        print("Get 성공:  \(data)")
-    //                    }
+                case .success:
+                    guard let response = res.data else { return }
+                    
+                    do {
+                        let decoder = JSONDecoder()
+                        let json = try decoder.decode(UserInfo.self, from: response)
+                        let userInfo: UserInfo = json
+                        
+                        self.dataTextView.text =
+                                            """
+                                            email: \(userInfo.email)
+                                            username: \(userInfo.userName)
+                                            password: \(userInfo.password)
+                                            """
+                        
+                    } catch(let err) {
+                        print(err.localizedDescription)
+                    }
+                    
+
                 case .failure(let err):
                     print("get Error: \(err.localizedDescription)")
                 }
